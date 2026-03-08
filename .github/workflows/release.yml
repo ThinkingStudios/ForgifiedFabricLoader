@@ -4,9 +4,10 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - '1.*'
+  workflow_dispatch:
+  release:
+    types:
+      - published
 
 permissions:
   contents: read
