@@ -37,7 +37,7 @@ gradleutils.version {
 }
 
 group = "org.sinytra"
-version = "0.1.0-$versionLoaderUpstream+$versionMc"
+version = "0.1.0+$versionLoaderUpstream+$versionMc"
 println("Version: $version")
 
 license {
