@@ -1,8 +1,6 @@
-# Forgified Fabric Loader
+# Forgified Fabric Loader (Unofficial)
 
-[![Release](https://github.com/Sinytra/ForgifiedFabricLoader/actions/workflows/release.yml/badge.svg)](https://github.com/Sinytra/ForgifiedFabricLoader/actions/workflows/release.yml)
-[![Latest Release](https://maven.su5ed.dev/api/badge/latest/releases/dev/su5ed/sinytra/fabric-loader?color=2280e0&name=Latest%20Release)](https://maven.su5ed.dev/#/releases/dev/su5ed/sinytra/fabric-loader)
-[![License](https://img.shields.io/github/license/sinytra/ForgifiedFabricLoader?color=orange)](https://github.com/Sinytra/ForgifiedFabricLoader/blob/1.20.1/LICENSE)
+Forgified Fabric Loader unofficial fork for NeoForge 21.11 and above version.
 
 An implementation of Fabric Loader api on top of NeoForged's Fancy Mod Loader, allowing NeoForge mods to access game information as
 well as other mod containers. Useful for cross-platform mod development.
