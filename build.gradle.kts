@@ -28,6 +28,14 @@ val versionForge: String by rootProject
 val versionLoaderUpstream: String by rootProject
 val versionYarn: String by project
 
+gradleutils.version {
+    branches {
+        suffixBranch()
+        suffixExemptedBranch(versionMc)
+        //suffixExemptedBranch("1.21.x")
+    }
+}
+
 group = "org.sinytra"
 version = "0.1.0-$versionLoaderUpstream+$versionMc"
 println("Version: $version")
@@ -186,11 +194,11 @@ publishing {
 
     repositories {
         maven {
-            name = "Su5eD"
-            url = uri("https://maven.su5ed.dev/releases")
+            name = "KTTMaven"
+            url = uri("https://maven.kessokuteatime.work/snapshots/")
             credentials {
-                username = System.getenv("MAVEN_USER") ?: "not"
-                password = System.getenv("MAVEN_PASSWORD") ?: "set"
+                username = System.getenv("KTT_MAVEN_USERNAME")
+                password = System.getenv("KTT_MAVEN_TOKEN")
             }
         }
     }
