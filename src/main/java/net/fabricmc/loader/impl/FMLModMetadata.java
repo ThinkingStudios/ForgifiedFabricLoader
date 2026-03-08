@@ -25,12 +25,11 @@ import net.fabricmc.loader.impl.metadata.SimplePerson;
 import net.neoforged.neoforgespi.language.IModInfo;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
+import net.fabricmc.loader.impl.util.modlauncher.LambdaExceptionUtil;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static cpw.mods.modlauncher.api.LambdaExceptionUtils.uncheck;
 
 public class FMLModMetadata implements ModMetadata {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -42,7 +41,7 @@ public class FMLModMetadata implements ModMetadata {
 
     public FMLModMetadata(IModInfo modInfo) {
         this.modInfo = modInfo;
-        this.version = uncheck(() -> Version.parse(this.modInfo.getVersion().toString()));
+        this.version = LambdaExceptionUtil.uncheck(() -> Version.parse(this.modInfo.getVersion().toString()));
         this.authors = modInfo.getConfig().getConfigElement("authors").stream()
             .flatMap(obj -> obj instanceof List list ? ((List<String>) list).stream() : Stream.of(obj.toString().split(",")))
             .<Person>map(SimplePerson::new)

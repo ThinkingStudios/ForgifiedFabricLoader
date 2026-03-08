@@ -42,7 +42,7 @@ public class FabricLauncherFML extends FabricLauncherBase {
 
     @Override
     public EnvType getEnvironmentType() {
-        return FMLEnvironment.dist.isClient() ? EnvType.CLIENT : EnvType.SERVER;
+        return FMLEnvironment.getDist().isClient() ? EnvType.CLIENT : EnvType.SERVER;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class FabricLauncherFML extends FabricLauncherBase {
 
     @Override
     public boolean isDevelopment() {
-        return !FMLEnvironment.production;
+        return !FMLEnvironment.isProduction();
     }
 
     @Override

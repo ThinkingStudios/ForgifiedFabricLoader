@@ -1,19 +1,17 @@
 import net.fabricmc.loom.api.mappings.layered.MappingsNamespace
+import net.fabricmc.loom.configuration.providers.mappings.GradleMappingContext
 import net.fabricmc.loom.configuration.providers.mappings.mojmap.MojangMappingLayer
 import net.fabricmc.loom.configuration.providers.mappings.mojmap.MojangMappingsSpec
 import net.fabricmc.loom.configuration.providers.minecraft.MinecraftMetadataProvider
 import net.fabricmc.loom.util.download.Download
 import net.fabricmc.loom.util.download.DownloadBuilder
-import net.fabricmc.loom.util.srg.Tsrg2Writer
 import net.fabricmc.mappingio.MappingReader
 import net.fabricmc.mappingio.MappingWriter
 import net.fabricmc.mappingio.adapter.*
 import net.fabricmc.mappingio.format.MappingFormat
 import net.fabricmc.mappingio.tree.MemoryMappingTree
 import java.nio.file.FileSystems
-import java.nio.file.StandardOpenOption
 import java.util.function.Function
-import kotlin.io.path.writeText
 
 plugins {
     java
@@ -21,7 +19,7 @@ plugins {
     id("org.cadixdev.licenser") version "0.6.1"
     id("net.neoforged.gradleutils") version "5.0.4"
     // Used for mapping tools only, provides TSRG writer on top of mappings-io
-    id("dev.architectury.loom") version "1.7-SNAPSHOT"
+    id("dev.architectury.loom") version "1.13-SNAPSHOT"
 }
 
 val versionMc: String by rootProject
@@ -30,16 +28,7 @@ val versionLoaderUpstream: String by rootProject
 val versionYarn: String by project
 
 group = "org.sinytra"
-version = "0.0.0-SNAPSHOT"
-
-gradleutils.version {
-    branches {
-        suffixBranch()
-        suffixExemptedBranch(versionMc)
-        suffixExemptedBranch("1.21.x")
-    }
-}
-version = "${gradleutils.version}+$versionLoaderUpstream+$versionMc"
+version = "0.1.0-$versionLoaderUpstream+$versionMc"
 println("Version: $version")
 
 license {
@@ -85,7 +74,7 @@ dependencies {
     neoForge(group = "net.neoforged", name = "neoforge", version = versionForge)
     yarnMappings(group = "net.fabricmc", name = "yarn", version = versionYarn)
 
-    api(include("net.minecraftforge:srgutils:0.5.4")!!)
+    api(include("net.neoforged:srgutils:1.0.11")!!)
     implementation(include("org.ow2.sat4j:org.ow2.sat4j.core:2.3.6")!!)
     implementation(include("org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6")!!)
 
@@ -126,16 +115,14 @@ val downloadMojmaps by tasks.registering {
             clientMappingsPath,
             serverMappingsPath,
             true,
+            true,
+            GradleMappingContext(project, projectDir.name).intermediaryTree(),
             project.logger,
             MojangMappingsSpec.SilenceLicenseOption { true })
         val mappings = MemoryMappingTree()
         mojMaps.visit(mappings)
-        outputFile.asFile.toPath().writeText(
-            Tsrg2Writer.serialize(mappings),
-            Charsets.UTF_8,
-            StandardOpenOption.CREATE,
-            StandardOpenOption.TRUNCATE_EXISTING
-        )
+        val writer = MappingWriter.create(outputFile.asFile.toPath(), MappingFormat.TSRG_2_FILE)
+        mappings.accept(writer)
     }
 }
 
@@ -239,11 +226,7 @@ open class GenerateMergedMappingsTask : DefaultTask() {
         filtered.accept(completer)
 
         // OFFICIAL -> INTERMEDIARY -> MOJANG
-        outputFile.get().asFile.toPath().writeText(
-            Tsrg2Writer.serialize(completed),
-            Charsets.UTF_8,
-            StandardOpenOption.CREATE,
-            StandardOpenOption.TRUNCATE_EXISTING
-        )
+        val writer = MappingWriter.create(outputFile.get().asFile.toPath(), MappingFormat.TSRG_2_FILE)
+        completed.accept(writer)
     }
 }

@@ -17,12 +17,11 @@
 package net.fabricmc.loader.impl.launch;
 
 import net.fabricmc.loader.impl.util.LoaderUtil;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 
 public final class MappingConfiguration {
 	private final String gameId = "minecraft";
-	private final String gameVersion = FMLLoader.versionInfo().mcVersion();
+	private final String gameVersion = FMLLoader.getCurrent().getVersionInfo().mcVersion();
 //	private TinyTree mappings;
 
 	public String getGameId() {

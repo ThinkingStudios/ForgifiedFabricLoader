@@ -19,8 +19,6 @@ package net.fabricmc.loader.impl;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import cpw.mods.modlauncher.ArgumentHandler;
-import cpw.mods.modlauncher.Launcher;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.loader.api.LanguageAdapter;
 import net.fabricmc.loader.api.ModContainer;
@@ -36,6 +34,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
+import net.neoforged.fml.loading.ProgramArgs;
 import net.neoforged.neoforgespi.language.IModInfo;
 
 import java.io.File;
@@ -67,7 +66,7 @@ public final class FabricLoaderImpl extends net.fabricmc.loader.FabricLoader {
 
     @Override
 	public String getRawGameVersion() {
-		return FMLLoader.versionInfo().mcVersion();
+		return FMLLoader.getCurrent().getVersionInfo().mcVersion();
 	}
 
 	@Override
@@ -77,7 +76,7 @@ public final class FabricLoaderImpl extends net.fabricmc.loader.FabricLoader {
 
     @Override
     public EnvType getEnvironmentType() {
-        return FMLEnvironment.dist == Dist.CLIENT ? EnvType.CLIENT : EnvType.SERVER;
+        return FMLEnvironment.getDist() == Dist.CLIENT ? EnvType.CLIENT : EnvType.SERVER;
     }
 
     /**
@@ -181,17 +180,17 @@ public final class FabricLoaderImpl extends net.fabricmc.loader.FabricLoader {
 
     @Override
     public boolean isDevelopmentEnvironment() {
-        return !FMLEnvironment.production;
+        return !FMLEnvironment.isProduction();
     }
 
     @Override
     public String[] getLaunchArguments(boolean sanitize) {
         if (launchArgs == null) {
             try {
-                Field argumentHandlerField = Launcher.class.getDeclaredField("argumentHandler");
-                argumentHandlerField.setAccessible(true);
-                ArgumentHandler handler = (ArgumentHandler) argumentHandlerField.get(Launcher.INSTANCE);
-                launchArgs = handler.buildArgumentList();
+                Field programArgsField = FMLLoader.class.getDeclaredField("programArgs");
+                programArgsField.setAccessible(true);
+                ProgramArgs handler = (ProgramArgs) programArgsField.get(FMLLoader.class);
+                launchArgs = handler.getArguments();
             } catch (Throwable t) {
                 throw new RuntimeException(t);
             }

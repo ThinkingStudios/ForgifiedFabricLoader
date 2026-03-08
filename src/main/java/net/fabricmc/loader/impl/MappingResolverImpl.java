@@ -40,7 +40,7 @@ public class MappingResolverImpl implements MappingResolver {
 
     public MappingResolverImpl() {
         URL path = getClass().getResource(MAPPINGS_RESOURCE);
-        if (path == null && !FMLEnvironment.production)
+        if (path == null && !FMLEnvironment.isProduction())
             throw new RuntimeException("Missing mappings file");
 
         try (InputStream is = path.openStream()) {
