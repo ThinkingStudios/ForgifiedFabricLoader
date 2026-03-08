@@ -17,6 +17,8 @@
 package net.fabricmc.loader.impl.launch;
 
 import net.fabricmc.loader.impl.util.LoaderUtil;
+import net.fabricmc.loader.impl.util.SystemProperties;
+import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 
 public final class MappingConfiguration {

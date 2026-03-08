@@ -17,7 +17,8 @@ plugins {
     java
     `maven-publish`
     id("org.cadixdev.licenser") version "0.6.1"
-    id("net.neoforged.gradleutils") version "5.0.4"
+    id("net.neoforged.gradleutils") version "5.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     // Used for mapping tools only, provides TSRG writer on top of mappings-io
     id("dev.architectury.loom") version "1.13-SNAPSHOT"
 }
@@ -38,6 +39,7 @@ license {
 }
 
 val yarnMappings: Configuration by configurations.creating
+val shade: Configuration by configurations.creating
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
@@ -49,6 +51,12 @@ sourceSets {
         java {
             srcDir("src/main/legacyJava")
         }
+    }
+}
+
+configurations {
+    implementation {
+        extendsFrom(shade)
     }
 }
 
@@ -74,9 +82,9 @@ dependencies {
     neoForge(group = "net.neoforged", name = "neoforge", version = versionForge)
     yarnMappings(group = "net.fabricmc", name = "yarn", version = versionYarn)
 
-    api(include("net.neoforged:srgutils:1.0.11")!!)
-    implementation(include("org.ow2.sat4j:org.ow2.sat4j.core:2.3.6")!!)
-    implementation(include("org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6")!!)
+    shade(api(include("net.neoforged:srgutils:1.0.11")!!)!!)
+    shade(include("org.ow2.sat4j:org.ow2.sat4j.core:2.3.6")!!)
+    shade(include("org.ow2.sat4j:org.ow2.sat4j.pb:2.3.6")!!)
 
     testCompileOnly("org.jetbrains:annotations:23.0.0")
     // Unit testing for mod metadata
@@ -137,7 +145,7 @@ val createTinyMappings by tasks.registering {
     val output = layout.buildDirectory.dir(name).get().file("output.tiny")
     outputs.file(output)
 
-    doFirst { 
+    doFirst {
         val mappings = MemoryMappingTree()
         MappingReader.read(createMappings.get().outputFile.get().asFile.toPath(), mappings)
         mappings.accept(MappingWriter.create(output.asFile.toPath(), MappingFormat.TINY_FILE))
@@ -145,14 +153,27 @@ val createTinyMappings by tasks.registering {
 }
 
 tasks {
-    jar {
-        from(createMappings.flatMap { it.outputFile }) { rename { "mappings.tsrg" } }
-        from(createTinyMappings.map { it.outputs.files.singleFile }) { rename { "mappings/mappings.tiny" } }
-        manifest.attributes(
-            "FMLModType" to "LIBRARY",
-            "Automatic-Module-Name" to "net.fabricmc.loader",
-            "Implementation-Version" to archiveVersion.get()
-        )
+    setOf(jar, shadowJar).forEach { provider ->
+        provider.configure {
+            from(createMappings.flatMap { it.outputFile }) { rename { "mappings.tsrg" } }
+            from(createTinyMappings.map { it.outputs.files.singleFile }) { rename { "mappings/mappings.tiny" } }
+            manifest.attributes(
+                "FMLModType" to "LIBRARY",
+                "Automatic-Module-Name" to "net.fabricmc.loader",
+                "Implementation-Version" to archiveVersion.get()
+            )
+        }
+    }
+
+    shadowJar {
+        configurations = listOf(shade)
+        relocate("net.minecraftforge.srgutils", "reloc.net.minecraftforge.srgutils")
+        relocate("org.sat4j", "reloc.org.sat4j")
+        archiveClassifier.set("full")
+    }
+
+    assemble {
+        dependsOn(shadowJar)
     }
 }
 
