@@ -42,17 +42,16 @@ public final class EntrypointTest {
 
 	@Test
 	public void testStaticEntry() {
-		assertEquals("static", EntrypointTest.staticEntry());
+		assertEquals("static", staticEntry());
 	}
 
 	@Test
 	public void testInstanceEntry() {
-		EntrypointTest test = new EntrypointTest();
-		assertEquals("instance", test.instanceEntry());
+		assertEquals("instance", instanceEntry());
 	}
 
 	@Test
 	public void testFieldEntry() {
-		assertEquals("field", EntrypointTest.fieldEntry());
+		assertEquals("field", fieldEntry());
 	}
 }
