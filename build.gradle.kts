@@ -3,7 +3,7 @@ plugins {
     `maven-publish`
     //id("org.cadixdev.licenser") version "0.6.1"
     id("net.neoforged.gradleutils") version "5.1.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("com.gradleup.shadow") version "9.+"
     // Used for mapping tools only, provides TSRG writer on top of mappings-io
     id("org.relativitymc.neo-loom") version "1.15-SNAPSHOT"
 }
@@ -78,7 +78,9 @@ dependencies {
     testCompileOnly("org.jetbrains:annotations:23.0.0")
     // Unit testing for mod metadata
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
+
 
 tasks {
     setOf(jar, shadowJar).forEach { provider ->
@@ -100,6 +102,10 @@ tasks {
 
     assemble {
         dependsOn(shadowJar)
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 

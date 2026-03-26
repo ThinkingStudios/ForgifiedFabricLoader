@@ -18,6 +18,8 @@ package net.fabricmc.test;
 
 import net.fabricmc.loader.impl.util.log.Log;
 import net.fabricmc.loader.impl.util.log.LogCategory;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public final class EntrypointTest {
 	public static final CustomEntry FIELD_ENTRY = EntrypointTest::fieldEntry;
@@ -36,5 +38,21 @@ public final class EntrypointTest {
 
 	public static String fieldEntry() {
 		return "field";
+	}
+
+	@Test
+	public void testStaticEntry() {
+		assertEquals("static", EntrypointTest.staticEntry());
+	}
+
+	@Test
+	public void testInstanceEntry() {
+		EntrypointTest test = new EntrypointTest();
+		assertEquals("instance", test.instanceEntry());
+	}
+
+	@Test
+	public void testFieldEntry() {
+		assertEquals("field", EntrypointTest.fieldEntry());
 	}
 }
