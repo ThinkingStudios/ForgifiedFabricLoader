@@ -18,8 +18,8 @@ package net.fabricmc.loader.impl;
 
 import net.fabricmc.loader.api.MappingResolver;
 import net.fabricmc.loader.impl.util.LoaderUtil;
-import net.minecraftforge.srgutils.IMappingFile;
-import net.minecraftforge.srgutils.INamedMappingFile;
+import net.neoforged.srgutils.IMappingFile;
+import net.neoforged.srgutils.INamedMappingFile;
 import net.neoforged.fml.loading.FMLEnvironment;
 
 import java.io.IOException;
